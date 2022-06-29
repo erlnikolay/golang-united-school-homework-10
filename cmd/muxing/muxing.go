@@ -18,6 +18,11 @@ Feel free to drop gorilla.mux if you want and use any other solution available.
 
 main function reads host/port from env just for an example, flavor it following your taste
 */
+var (
+	noHeadesetResp  string = "No headers set Response expected to have"
+	contentTypeName string = "Content-Type"
+	gotMessageStr   string = "I got message:"
+)
 
 // get request with param create struct param
 func handleParam(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +45,7 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 			getWithBad(w)
 			return
 		default:
-			http.Error(w, "No headers set Response expected to have", http.StatusBadRequest)
+			http.Error(w, noHeadesetResp, http.StatusBadRequest)
 			return
 		}
 	} else if r.Method == http.MethodPost { // Methos POST with body
@@ -64,14 +69,14 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 				switch paramsSlice[1] {
 				case "data":
 					// check conetnt type in Header
-					if _, ok := r.Header["Content-Type"]; ok {
-						if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/x-www-form-urlencoded" {
+					if _, ok := r.Header[contentTypeName]; ok {
+						if strings.Split(r.Header[contentTypeName][0], ";")[0] == "application/x-www-form-urlencoded" {
 							postWithBodyAsData(body, w)
 							return
-						} else if strings.Split(strings.Split(r.Header["Content-Type"][0], ";")[0], " ")[0] == "multipart/form-data" {
+						} else if strings.Split(strings.Split(r.Header[contentTypeName][0], ";")[0], " ")[0] == "multipart/form-data" {
 							postWithBodyAsForm(body, w)
 							return
-						} else if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
+						} else if strings.Split(r.Header[contentTypeName][0], ";")[0] == "application/json" {
 							postWithBodyAsJson(body, w)
 							return
 						} else {
@@ -90,21 +95,21 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 					if ok_a && ok_b {
 						postWithBodyAsJsonWithCalc(w, val_a[0], val_b[0])
 					} else {
-						http.Error(w, "No headers set Response expected to have", http.StatusBadRequest)
+						http.Error(w, noHeadesetResp, http.StatusBadRequest)
 						return
 					}
 				}
 			}
 		}
 	} else {
-		http.Error(w, "No headers set Response expected to have", http.StatusBadRequest)
+		http.Error(w, noHeadesetResp, http.StatusBadRequest)
 		return
 	}
 }
 
 func getWithParam(parameter string, hRes http.ResponseWriter) {
 	// handle parameter on error
-	hRes.Header().Set("Content-Type", "text/plain")
+	hRes.Header().Set(contentTypeName, "text/plain")
 	hRes.WriteHeader(http.StatusOK)
 	fmt.Fprintf(hRes, "Hello, %v!", parameter)
 }
@@ -113,19 +118,19 @@ func getWithBad(hRes http.ResponseWriter) {
 	http.Error(hRes, "500 Internal Status Error", http.StatusInternalServerError)
 }
 
-func postWithBodyAsData(bodyParam []byte, hRes http.ResponseWriter) {
+func postWithBodyAsData(body_Param []byte, hRes http.ResponseWriter) {
 	hRes.WriteHeader(http.StatusOK)
-	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
+	fmt.Fprintf(hRes, "%v\n%v", gotMessageStr, string(body_Param))
 }
 
-func postWithBodyAsForm(bodyParam []byte, hRes http.ResponseWriter) {
+func postWithBodyAsForm(body_Param []byte, hRes http.ResponseWriter) {
 	hRes.WriteHeader(http.StatusOK)
-	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
+	fmt.Fprintf(hRes, "%v\n%v", gotMessageStr, string(body_Param))
 }
 
-func postWithBodyAsJson(bodyParam []byte, hRes http.ResponseWriter) {
+func postWithBodyAsJson(body_Param []byte, hRes http.ResponseWriter) {
 	hRes.WriteHeader(http.StatusOK)
-	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
+	fmt.Fprintf(hRes, "%v\n%v", gotMessageStr, string(body_Param))
 }
 
 func postWithBodyAsJsonWithCalc(hRes http.ResponseWriter, first_header_value string, second_header_value string) {
@@ -147,7 +152,7 @@ func postWithBodyAsJsonWithCalc(hRes http.ResponseWriter, first_header_value str
 	hRes.Header().Add("a+b", fmt.Sprintf("%v", tmpSum))
 	hRes.WriteHeader(http.StatusOK)
 	// have send messages
-	fmt.Fprintf(hRes, "I got message:\n%v", hRes.Header().Get("a+b"))
+	fmt.Fprintf(hRes, "%v\n%v", gotMessageStr, hRes.Header().Get("a+b"))
 }
 
 // Start /** Starts the web server listener on given host and port.
