@@ -65,7 +65,7 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 			body, err := ioutil.ReadAll(r.Body)
 			fmt.Printf("Request body: %v\n", string(body))
 			fmt.Printf("Lenght of body: %v\n", len(body))
-			fmt.Printf("Header: %v\n", r.Header["Content-Type"][0])
+			fmt.Printf("Header: %v\n", r.Header)
 			if err != nil {
 				fmt.Fprintf(w, "err %v %v\n", err, err.Error())
 				return
