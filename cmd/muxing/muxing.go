@@ -34,9 +34,9 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		// check param
 		paramsSlice = strings.Split(r.URL.Path, "/")
-		fmt.Println("GET")
-		fmt.Println(paramsSlice)
-		fmt.Println(len(paramsSlice))
+		//fmt.Println("GET")
+		//fmt.Println(paramsSlice)
+		//fmt.Println(len(paramsSlice))
 		if len(paramsSlice) < 2 {
 			http.Error(w, "expect /name/{param} in task handler", http.StatusBadRequest)
 			return
@@ -54,18 +54,18 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.Method == http.MethodPost { // Methos POST with body
 		paramsSlice = strings.Split(r.URL.Path, "/")
-		fmt.Println("POST")
-		fmt.Println(paramsSlice)
-		fmt.Println(len(paramsSlice))
+		//fmt.Println("POST")
+		//fmt.Println(paramsSlice)
+		//fmt.Println(len(paramsSlice))
 		if len(paramsSlice) < 2 {
 			http.Error(w, "expect /data or /header in task handler", http.StatusBadRequest)
 			return
 		} else {
 			// take body into handler
 			body, err := ioutil.ReadAll(r.Body)
-			fmt.Printf("Request body: %v\n", string(body))
-			fmt.Printf("Lenght of body: %v\n", len(body))
-			fmt.Printf("Header: %v\n", r.Header)
+			//fmt.Printf("Request body: %v\n", string(body))
+			//fmt.Printf("Lenght of body: %v\n", len(body))
+			//fmt.Printf("Header: %v\n", r.Header)
 			if err != nil {
 				fmt.Fprintf(w, "err %v %v\n", err, err.Error())
 				return
@@ -169,13 +169,13 @@ func postWithBodyAsJsonWithCalc(bodyParam []byte, hRes http.ResponseWriter) {
 			fmt.Fprintf(hRes, "Header with wrong first param:\n%v, error:\n%v", bodyParsData.B, err)
 			return
 		}
-		fmt.Println(bodyParsData.A)
-		fmt.Println(bodyParsData.B)
+		//fmt.Println(bodyParsData.A)
+		//fmt.Println(bodyParsData.B)
 		tmpSum := strconv.Itoa(firstHeaderParam + secondHeaderParam)
 		hRes.Header().Add("a+b", tmpSum)
 		hRes.WriteHeader(http.StatusOK)
-		fmt.Println(hRes.Header().Values("a+b"))
-		fmt.Println(hRes.Header())
+		//fmt.Println(hRes.Header().Values("a+b"))
+		//fmt.Println(hRes.Header())
 		fmt.Fprintf(hRes, "I got message:\n%v\n%v\n", string(bodyParam), hRes.Header())
 	}
 }
