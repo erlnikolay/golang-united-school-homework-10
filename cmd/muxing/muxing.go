@@ -19,11 +19,6 @@ Feel free to drop gorilla.mux if you want and use any other solution available.
 main function reads host/port from env just for an example, flavor it following your taste
 */
 
-//type CalculationData struct {
-//	A string
-//	B string
-//}
-
 // get request with param create struct param
 func handleParam(w http.ResponseWriter, r *http.Request) {
 	var paramsSlice []string
@@ -33,9 +28,6 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		// check param
 		paramsSlice = strings.Split(r.URL.Path, "/")
-		//fmt.Println("GET")
-		//fmt.Println(paramsSlice)
-		//fmt.Println(len(paramsSlice))
 		if len(paramsSlice) < 2 {
 			http.Error(w, "expect /name/{param} in task handler", http.StatusBadRequest)
 			return
@@ -53,18 +45,12 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.Method == http.MethodPost { // Methos POST with body
 		paramsSlice = strings.Split(r.URL.Path, "/")
-		//fmt.Println("POST")
-		//fmt.Println(paramsSlice)
-		//fmt.Println(len(paramsSlice))
 		if len(paramsSlice) < 2 {
 			http.Error(w, "expect /data or /header in task handler", http.StatusBadRequest)
 			return
 		} else {
 			// take body into handler
 			body, err := ioutil.ReadAll(r.Body)
-			//fmt.Printf("Request body: %v\n", string(body))
-			//fmt.Printf("Lenght of body: %v\n", len(body))
-			//fmt.Printf("Header: %v\n", r.Header)
 			if err != nil {
 				fmt.Fprintf(w, "err %v %v\n", err, err.Error())
 				return
@@ -97,24 +83,16 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 						postWithBodyAsData(body, w)
 					}
 				case "headers":
+					// take a,b
 					val_a, ok_a := r.Header["A"]
 					val_b, ok_b := r.Header["B"]
+					// there are a,b
 					if ok_a && ok_b {
 						postWithBodyAsJsonWithCalc(w, val_a[0], val_b[0])
+					} else {
+						http.Error(w, "No headers set Response expected to have", http.StatusBadRequest)
+						return
 					}
-					//if _, ok := r.Header["Content-Type"]; ok {
-					//	if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
-					//		postWithBodyAsJsonWithCalc(body, w)
-					//		return
-					//	} else {
-					//		http.Error(w, "POST headers request is unknown headers data", http.StatusBadRequest)
-					//		return
-					//	}
-					//} else {
-					//	postWithBodyAsJsonWithCalc(body, w)
-					//}
-					//fmt.Println(string(body))
-					//postWithBody(body, w)
 				}
 			}
 		}
@@ -136,34 +114,23 @@ func getWithBad(hRes http.ResponseWriter) {
 }
 
 func postWithBodyAsData(bodyParam []byte, hRes http.ResponseWriter) {
-	//fmt.Println("Parameters Data")
 	hRes.WriteHeader(http.StatusOK)
 	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
 }
 
 func postWithBodyAsForm(bodyParam []byte, hRes http.ResponseWriter) {
-	//fmt.Println("Form Data")
 	hRes.WriteHeader(http.StatusOK)
 	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
 }
 
 func postWithBodyAsJson(bodyParam []byte, hRes http.ResponseWriter) {
-	//fmt.Println("JSON Data")
 	hRes.WriteHeader(http.StatusOK)
 	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
 }
 
 func postWithBodyAsJsonWithCalc(hRes http.ResponseWriter, first_header_value string, second_header_value string) {
-	//var bodyParsData CalculationData
-
-	//fmt.Println("JSON Data for headers")
-	//err := json.Unmarshal(bodyParam, &bodyParsData)
-	//if err != nil {
-	//	fmt.Fprintf(hRes, "Header with wrong data:\n%v, error:\n%v", string(bodyParam), err)
-	//	return
-	//} else {
 	// calculation
-	// check on number
+	// check on number a,b
 	firstHeaderParam, err := strconv.Atoi(first_header_value)
 	if err != nil {
 		fmt.Fprintf(hRes, "Header with wrong first param:\n%v, error:\n%v", first_header_value, err)
@@ -174,16 +141,13 @@ func postWithBodyAsJsonWithCalc(hRes http.ResponseWriter, first_header_value str
 		fmt.Fprintf(hRes, "Header with wrong second param:\n%v, error:\n%v", second_header_value, err)
 		return
 	}
-	//fmt.Println(bodyParsData.A)
-	//fmt.Println(bodyParsData.B)
+	// move sum to stirng
 	tmpSum := strconv.Itoa(firstHeaderParam + secondHeaderParam)
-	//fmt.Printf("value of caclculation: %v\n", fmt.Sprintf("\"%v\"", tmpSum))
+	// add new header
 	hRes.Header().Add("a+b", fmt.Sprintf("%v", tmpSum))
 	hRes.WriteHeader(http.StatusOK)
-	//fmt.Println(hRes.Header().Values("a+b"))
-	//fmt.Println(hRes.Header().Get("a+b"))
+	// have send messages
 	fmt.Fprintf(hRes, "I got message:\n%v", hRes.Header().Get("a+b"))
-	//}
 }
 
 // Start /** Starts the web server listener on given host and port.
