@@ -34,8 +34,9 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodGet {
 		// check param
 		paramsSlice = strings.Split(r.URL.Path, "/")
-		//fmt.Println(paramsSlice)
-		//fmt.Println(len(paramsSlice))
+		fmt.Println("GET")
+		fmt.Println(paramsSlice)
+		fmt.Println(len(paramsSlice))
 		if len(paramsSlice) < 2 {
 			http.Error(w, "expect /name/{param} in task handler", http.StatusBadRequest)
 			return
@@ -53,19 +54,27 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 		}
 	} else if r.Method == http.MethodPost { // Methos POST with body
 		paramsSlice = strings.Split(r.URL.Path, "/")
-		//fmt.Println(paramsSlice)
-		//fmt.Println(len(paramsSlice))
+		fmt.Println("POST")
+		fmt.Println(paramsSlice)
+		fmt.Println(len(paramsSlice))
 		if len(paramsSlice) < 2 {
 			http.Error(w, "expect /data or /header in task handler", http.StatusBadRequest)
 			return
 		} else {
 			// take body into handler
 			body, err := ioutil.ReadAll(r.Body)
+			fmt.Printf("Request body: %v\n", body)
+			fmt.Printf("Lenght of body: %v\n", len(body))
 			if err != nil {
 				fmt.Fprintf(w, "err %v %v\n", err, err.Error())
 				return
 			} else {
 				// handle of post request
+				// there is not a body
+				if len(body) <= 0 {
+					fmt.Fprintf(w, "No body set\n")
+					return
+				}
 				switch paramsSlice[1] {
 				case "data":
 					if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/x-www-form-urlencoded" {
