@@ -57,7 +57,7 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 			// take body into handler
 			body, err := ioutil.ReadAll(r.Body)
 			if err != nil {
-				fmt.Fprintf(w, "err %w %v\n", err, err.Error())
+				fmt.Fprintf(w, "err %v %v\n", err, err.Error())
 			} else {
 				// handle of post request
 				switch paramsSlice[1] {
