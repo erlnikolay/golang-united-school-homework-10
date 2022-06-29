@@ -124,7 +124,7 @@ func getWithParam(parameter string, hRes http.ResponseWriter) {
 	// handle parameter on error
 	hRes.Header().Set("Content-Type", "text/plain")
 	hRes.WriteHeader(http.StatusOK)
-	fmt.Fprintf(hRes, "Hello, %v", parameter)
+	fmt.Fprintf(hRes, "Hello, %v!", parameter)
 }
 
 func getWithBad(hRes http.ResponseWriter) {
