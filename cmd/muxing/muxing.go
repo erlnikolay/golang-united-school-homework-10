@@ -134,19 +134,19 @@ func getWithBad(hRes http.ResponseWriter) {
 func postWithBodyAsData(bodyParam []byte, hRes http.ResponseWriter) {
 	//fmt.Println("Parameters Data")
 	hRes.WriteHeader(http.StatusOK)
-	fmt.Fprintf(hRes, "I got message:\n%v\n", string(bodyParam))
+	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
 }
 
 func postWithBodyAsForm(bodyParam []byte, hRes http.ResponseWriter) {
 	//fmt.Println("Form Data")
 	hRes.WriteHeader(http.StatusOK)
-	fmt.Fprintf(hRes, "I got message:\n%v\n", string(bodyParam))
+	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
 }
 
 func postWithBodyAsJson(bodyParam []byte, hRes http.ResponseWriter) {
 	//fmt.Println("JSON Data")
 	hRes.WriteHeader(http.StatusOK)
-	fmt.Fprintf(hRes, "I got message:\n%v\n", string(bodyParam))
+	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
 }
 
 func postWithBodyAsJsonWithCalc(bodyParam []byte, hRes http.ResponseWriter) {
