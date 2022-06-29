@@ -144,7 +144,7 @@ func postWithBodyAsForm(bodyParam []byte, hRes http.ResponseWriter) {
 }
 
 func postWithBodyAsJson(bodyParam []byte, hRes http.ResponseWriter) {
-	fmt.Println("JSON Data")
+	//fmt.Println("JSON Data")
 	hRes.WriteHeader(http.StatusOK)
 	fmt.Fprintf(hRes, "I got message:\n%v\n", string(bodyParam))
 }
@@ -152,7 +152,7 @@ func postWithBodyAsJson(bodyParam []byte, hRes http.ResponseWriter) {
 func postWithBodyAsJsonWithCalc(bodyParam []byte, hRes http.ResponseWriter) {
 	var bodyParsData CalculationData
 
-	fmt.Println("JSON Data for headers")
+	//fmt.Println("JSON Data for headers")
 	err := json.Unmarshal(bodyParam, &bodyParsData)
 	if err != nil {
 		fmt.Fprintf(hRes, "Header with wrong data:\n%v, error:\n%v", string(bodyParam), err)
