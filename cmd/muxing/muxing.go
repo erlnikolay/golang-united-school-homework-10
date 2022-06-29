@@ -78,26 +78,36 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 				}
 				switch paramsSlice[1] {
 				case "data":
-					if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/x-www-form-urlencoded" {
-						postWithBodyAsData(body, w)
-						return
-					} else if strings.Split(strings.Split(r.Header["Content-Type"][0], ";")[0], " ")[0] == "multipart/form-data" {
-						postWithBodyAsForm(body, w)
-						return
-					} else if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
-						postWithBodyAsJson(body, w)
-						return
+					// check conetnt type in Header
+					if _, ok := r.Header["Content-Type"]; ok {
+						if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/x-www-form-urlencoded" {
+							postWithBodyAsData(body, w)
+							return
+						} else if strings.Split(strings.Split(r.Header["Content-Type"][0], ";")[0], " ")[0] == "multipart/form-data" {
+							postWithBodyAsForm(body, w)
+							return
+						} else if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
+							postWithBodyAsJson(body, w)
+							return
+						} else {
+							http.Error(w, "POST data request is unknown requested data", http.StatusBadRequest)
+							return
+						}
 					} else {
-						http.Error(w, "POST data request is unknown requested data", http.StatusBadRequest)
-						return
+						// Contetn-Type there is not in Header
+						postWithBodyAsData(body, w)
 					}
 				case "headers":
-					if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
-						postWithBodyAsJsonWithCalc(body, w)
-						return
+					if _, ok := r.Header["Content-Type"]; ok {
+						if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
+							postWithBodyAsJsonWithCalc(body, w)
+							return
+						} else {
+							http.Error(w, "POST headers request is unknown headers data", http.StatusBadRequest)
+							return
+						}
 					} else {
-						http.Error(w, "POST headers request is unknown headers data", http.StatusBadRequest)
-						return
+						postWithBodyAsJsonWithCalc(body, w)
 					}
 					//fmt.Println(string(body))
 					//postWithBody(body, w)
