@@ -172,11 +172,12 @@ func postWithBodyAsJsonWithCalc(bodyParam []byte, hRes http.ResponseWriter) {
 		//fmt.Println(bodyParsData.A)
 		//fmt.Println(bodyParsData.B)
 		tmpSum := strconv.Itoa(firstHeaderParam + secondHeaderParam)
-		hRes.Header().Add("a+b", tmpSum)
+		fmt.Printf("value of caclculation: %v\n", fmt.Sprintf("\"%v\"", tmpSum))
+		hRes.Header().Add("a+b", fmt.Sprintf("\"%v\"", tmpSum))
 		hRes.WriteHeader(http.StatusOK)
 		//fmt.Println(hRes.Header().Values("a+b"))
 		//fmt.Println(hRes.Header())
-		fmt.Fprintf(hRes, "I got message:\n%v\n%v\n", string(bodyParam), hRes.Header())
+		fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
 	}
 }
 
