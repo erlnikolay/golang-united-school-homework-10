@@ -38,14 +38,18 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 		//fmt.Println(len(paramsSlice))
 		if len(paramsSlice) < 2 {
 			http.Error(w, "expect /name/{param} in task handler", http.StatusBadRequest)
+			return
 		}
 		switch paramsSlice[1] {
 		case "name":
 			getWithParam(paramsSlice[len(paramsSlice)-1], w)
+			return
 		case "bad":
 			getWithBad(w)
+			return
 		default:
 			http.Error(w, "No headers set Response expected to have", http.StatusBadRequest)
+			return
 		}
 	} else if r.Method == http.MethodPost { // Methos POST with body
 		paramsSlice = strings.Split(r.URL.Path, "/")
@@ -53,37 +57,46 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 		//fmt.Println(len(paramsSlice))
 		if len(paramsSlice) < 2 {
 			http.Error(w, "expect /data or /header in task handler", http.StatusBadRequest)
+			return
 		} else {
 			// take body into handler
 			body, err := ioutil.ReadAll(r.Body)
 			if err != nil {
 				fmt.Fprintf(w, "err %v %v\n", err, err.Error())
+				return
 			} else {
 				// handle of post request
 				switch paramsSlice[1] {
 				case "data":
 					if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/x-www-form-urlencoded" {
 						postWithBodyAsData(body, w)
+						return
 					} else if strings.Split(strings.Split(r.Header["Content-Type"][0], ";")[0], " ")[0] == "multipart/form-data" {
 						postWithBodyAsForm(body, w)
+						return
 					} else if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
 						postWithBodyAsJson(body, w)
+						return
 					} else {
 						http.Error(w, "POST data request is unknown requested data", http.StatusBadRequest)
+						return
 					}
 				case "headers":
 					if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
 						postWithBodyAsJsonWithCalc(body, w)
+						return
 					} else {
 						http.Error(w, "POST headers request is unknown headers data", http.StatusBadRequest)
+						return
 					}
-					fmt.Println(string(body))
+					//fmt.Println(string(body))
 					//postWithBody(body, w)
 				}
 			}
 		}
 	} else {
 		http.Error(w, "No headers set Response expected to have", http.StatusBadRequest)
+		return
 	}
 }
 
@@ -123,15 +136,18 @@ func postWithBodyAsJsonWithCalc(bodyParam []byte, hRes http.ResponseWriter) {
 	err := json.Unmarshal(bodyParam, &bodyParsData)
 	if err != nil {
 		fmt.Fprintf(hRes, "Header with wrong data:\n%v, error:\n%v", string(bodyParam), err)
+		return
 	} else {
 		// calculation
 		firstHeaderParam, err := strconv.Atoi(bodyParsData.A)
 		if err != nil {
 			fmt.Fprintf(hRes, "Header with wrong first param:\n%v, error:\n%v", bodyParsData.A, err)
+			return
 		}
 		secondHeaderParam, err := strconv.Atoi(bodyParsData.B)
 		if err != nil {
 			fmt.Fprintf(hRes, "Header with wrong first param:\n%v, error:\n%v", bodyParsData.B, err)
+			return
 		}
 		fmt.Println(bodyParsData.A)
 		fmt.Println(bodyParsData.B)
