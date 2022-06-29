@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"log"
@@ -20,10 +19,10 @@ Feel free to drop gorilla.mux if you want and use any other solution available.
 main function reads host/port from env just for an example, flavor it following your taste
 */
 
-type CalculationData struct {
-	A string
-	B string
-}
+//type CalculationData struct {
+//	A string
+//	B string
+//}
 
 // get request with param create struct param
 func handleParam(w http.ResponseWriter, r *http.Request) {
@@ -98,17 +97,22 @@ func handleParam(w http.ResponseWriter, r *http.Request) {
 						postWithBodyAsData(body, w)
 					}
 				case "headers":
-					if _, ok := r.Header["Content-Type"]; ok {
-						if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
-							postWithBodyAsJsonWithCalc(body, w)
-							return
-						} else {
-							http.Error(w, "POST headers request is unknown headers data", http.StatusBadRequest)
-							return
-						}
-					} else {
-						postWithBodyAsJsonWithCalc(body, w)
+					val_a, ok_a := r.Header["A"]
+					val_b, ok_b := r.Header["B"]
+					if ok_a && ok_b {
+						postWithBodyAsJsonWithCalc(w, val_a[0], val_b[0])
 					}
+					//if _, ok := r.Header["Content-Type"]; ok {
+					//	if strings.Split(r.Header["Content-Type"][0], ";")[0] == "application/json" {
+					//		postWithBodyAsJsonWithCalc(body, w)
+					//		return
+					//	} else {
+					//		http.Error(w, "POST headers request is unknown headers data", http.StatusBadRequest)
+					//		return
+					//	}
+					//} else {
+					//	postWithBodyAsJsonWithCalc(body, w)
+					//}
 					//fmt.Println(string(body))
 					//postWithBody(body, w)
 				}
@@ -149,36 +153,37 @@ func postWithBodyAsJson(bodyParam []byte, hRes http.ResponseWriter) {
 	fmt.Fprintf(hRes, "I got message:\n%v", string(bodyParam))
 }
 
-func postWithBodyAsJsonWithCalc(bodyParam []byte, hRes http.ResponseWriter) {
-	var bodyParsData CalculationData
+func postWithBodyAsJsonWithCalc(hRes http.ResponseWriter, first_header_value string, second_header_value string) {
+	//var bodyParsData CalculationData
 
 	//fmt.Println("JSON Data for headers")
-	err := json.Unmarshal(bodyParam, &bodyParsData)
+	//err := json.Unmarshal(bodyParam, &bodyParsData)
+	//if err != nil {
+	//	fmt.Fprintf(hRes, "Header with wrong data:\n%v, error:\n%v", string(bodyParam), err)
+	//	return
+	//} else {
+	// calculation
+	// check on number
+	firstHeaderParam, err := strconv.Atoi(first_header_value)
 	if err != nil {
-		fmt.Fprintf(hRes, "Header with wrong data:\n%v, error:\n%v", string(bodyParam), err)
+		fmt.Fprintf(hRes, "Header with wrong first param:\n%v, error:\n%v", first_header_value, err)
 		return
-	} else {
-		// calculation
-		firstHeaderParam, err := strconv.Atoi(bodyParsData.A)
-		if err != nil {
-			fmt.Fprintf(hRes, "Header with wrong first param:\n%v, error:\n%v", bodyParsData.A, err)
-			return
-		}
-		secondHeaderParam, err := strconv.Atoi(bodyParsData.B)
-		if err != nil {
-			fmt.Fprintf(hRes, "Header with wrong first param:\n%v, error:\n%v", bodyParsData.B, err)
-			return
-		}
-		//fmt.Println(bodyParsData.A)
-		//fmt.Println(bodyParsData.B)
-		tmpSum := strconv.Itoa(firstHeaderParam + secondHeaderParam)
-		//fmt.Printf("value of caclculation: %v\n", fmt.Sprintf("\"%v\"", tmpSum))
-		hRes.Header().Add("a+b", fmt.Sprintf("\"%v\"", tmpSum))
-		hRes.WriteHeader(http.StatusOK)
-		//fmt.Println(hRes.Header().Values("a+b"))
-		//fmt.Println(hRes.Header().Get("a+b"))
-		fmt.Fprintf(hRes, "I got message:\n%v", hRes.Header().Get("a+b"))
 	}
+	secondHeaderParam, err := strconv.Atoi(second_header_value)
+	if err != nil {
+		fmt.Fprintf(hRes, "Header with wrong second param:\n%v, error:\n%v", second_header_value, err)
+		return
+	}
+	//fmt.Println(bodyParsData.A)
+	//fmt.Println(bodyParsData.B)
+	tmpSum := strconv.Itoa(firstHeaderParam + secondHeaderParam)
+	//fmt.Printf("value of caclculation: %v\n", fmt.Sprintf("\"%v\"", tmpSum))
+	hRes.Header().Add("a+b", fmt.Sprintf("%v", tmpSum))
+	hRes.WriteHeader(http.StatusOK)
+	//fmt.Println(hRes.Header().Values("a+b"))
+	//fmt.Println(hRes.Header().Get("a+b"))
+	fmt.Fprintf(hRes, "I got message:\n%v", hRes.Header().Get("a+b"))
+	//}
 }
 
 // Start /** Starts the web server listener on given host and port.
